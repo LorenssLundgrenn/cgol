@@ -61,21 +61,18 @@ while running:
                 lifeProbability = 0
                 cells = create_grid()
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouseButtonHeld[event.button-1] = True
-        elif event.type == pygame.MOUSEBUTTONUP:
-            mouseButtonHeld[event.button-1] = False
-
-    if mouseButtonHeld[0] or mouseButtonHeld[2]:
-        pos = pygame.mouse.get_pos()
-        cellY = math.floor(((pos[1]-yoffset)/tileSize)%height)
-        cellX = math.floor(((pos[0]-xoffset)/tileSize)%width)
-        if mouseButtonHeld[0]:
-            if cells[cellY][cellX] != 1:
-                cells[cellY][cellX] = 1
-        else:
-            if cells[cellY][cellX] != 0:
-                cells[cellY][cellX] = 0
+        elif event.type == (pygame.MOUSEBUTTONDOWN or pygame.MOUSEBUTTONUP):
+            mouseButtonHeld = pygame.mouse.get_pressed()
+            if mouseButtonHeld[0] or mouseButtonHeld[2]:
+                pos = pygame.mouse.get_pos()
+                cellY = math.floor(((pos[1]-yoffset)/tileSize)%height)
+                cellX = math.floor(((pos[0]-xoffset)/tileSize)%width)
+                if mouseButtonHeld[0]:
+                    if cells[cellY][cellX] != 1:
+                        cells[cellY][cellX] = 1
+                elif mouseButtonHeld[2]:
+                    if cells[cellY][cellX] != 0:
+                        cells[cellY][cellX] = 0
 
     lifeQuery = []
     deathQuery = []
