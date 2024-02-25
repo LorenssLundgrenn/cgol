@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	}
 
     State game = State(
-        INIT_SCR_W, INIT_SCR_H, COLS, ROWS
+        INIT_SCR_W, INIT_SCR_H, ROWS, COLS
     );
     if (game.init()) {
         game.mainloop();

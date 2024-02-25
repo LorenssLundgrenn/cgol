@@ -15,8 +15,9 @@ State::State(int scr_w, int scr_h, int rows, int cols) :
 	scr_w(scr_w), scr_h(scr_h), rows(rows), cols(cols)
 {
 	grid = new int[rows*cols];
-	arr_fill(grid, 0, rows * cols);
 	buffer = new int[rows*cols];
+	arr_fill(grid, 0, rows * cols);
+
 	int cell_w = (int)(scr_w/cols);
     int cell_h = (int)(scr_h/rows);
     cell_size = cell_w < cell_h ? cell_w : cell_h;
@@ -65,8 +66,8 @@ void State::update_screen(int win_w, int win_h) {
     int x_diff = (scr_w - cell_size * cols);
     int y_diff = (scr_h - cell_size * rows);
 	
-	viewport.x = (int)(x_diff / 2);
-	viewport.y = (int)(y_diff / 2);
+	viewport.x = (int)(x_diff/2);
+	viewport.y = (int)(y_diff/2);
 	viewport.w = scr_w - x_diff;
 	viewport.h = scr_h - y_diff;
 	SDL_RenderSetViewport(renderer, &viewport);
@@ -74,6 +75,7 @@ void State::update_screen(int win_w, int win_h) {
 
 void State::mainloop() {
 	arr_fill(grid, 0, rows * cols);
+	arr_fill(buffer, 0, rows * cols);
 
 	while (running) {
 		if (simulate) {
@@ -201,7 +203,7 @@ int State::mouse_pos_to_cell(int x, int y) {
 }
 
 int State::wrap_pos(int pos) {
-	int area = rows * rows;
+	int area = rows * cols;
 	return (area + pos) % (area);
 }
 
@@ -209,12 +211,12 @@ int State::n_neighbors(int pos) {
 	int neighbors = 0;
 	neighbors += grid[wrap_pos(pos-1)];			// left
 	neighbors += grid[wrap_pos(pos+1)];			// right
-	neighbors += grid[wrap_pos(pos-rows)];		// top
-	neighbors += grid[wrap_pos(pos-rows-1)];	// top left
-	neighbors += grid[wrap_pos(pos-rows+1)];	// top right
-	neighbors += grid[wrap_pos(pos+rows)];   	// bottom
-	neighbors += grid[wrap_pos(pos+rows-1)];	// bottom left
-	neighbors += grid[wrap_pos(pos+rows+1)];	// bottom right
+	neighbors += grid[wrap_pos(pos-cols)];		// top
+	neighbors += grid[wrap_pos(pos-cols-1)];	// top left
+	neighbors += grid[wrap_pos(pos-cols+1)];	// top right
+	neighbors += grid[wrap_pos(pos+cols)];   	// bottom
+	neighbors += grid[wrap_pos(pos+cols-1)];	// bottom left
+	neighbors += grid[wrap_pos(pos+cols+1)];	// bottom right
 	return neighbors;
 }
 
@@ -227,7 +229,7 @@ void State::draw_cells() {
 		if (grid[i] == 1) {
 			SDL_Rect cell_rect;
 			cell_rect.x = (i % cols) * cell_size;
-			cell_rect.y = (int)floor(i/rows) * cell_size;
+			cell_rect.y = (int)i/cols * cell_size;
 			cell_rect.w = cell_size;
 			cell_rect.h = cell_size;
 			SDL_RenderFillRect(renderer, &cell_rect);
