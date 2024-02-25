@@ -38,7 +38,7 @@ private:
     void draw_grid();
 
     std::string generate_seed();
-    void load_seed(std::string binary_number);
+    void load_seed(std::string seed);
 
 public:
     State(int scr_w, int scr_h, int rows, int cols);
