@@ -152,24 +152,24 @@ void State::handle_inputs() {
 		int x, y;
 		SDL_GetMouseState(&x, &y);
 		if (mouse_within_viewport(x, y)) {
-			int pos = mouse_pos_to_cell(x, y);
+			int pos = mouse_pos_to_cell_pos(x, y);
 			buffer[pos] = left_mouse_held ? 1 : 0;
 		}
 	}
 }
 
 void State::update() {
-	for (int i = 0; i < rows*cols; i++) {
-		int neighbors = n_neighbors(i);
-		int cell = grid[i];
+	for (int pos = 0; pos < rows*cols; pos++) {
+		int cell = grid[pos];
+		int neighbors = n_neighbors(pos);
 		if (cell == 1 && (neighbors < 2 || neighbors > 3)) {
-			buffer[i] = 0;
+			buffer[pos] = 0;
 		}
 		else if (cell == 0 && neighbors == 3) {
-			buffer[i] = 1;
+			buffer[pos] = 1;
 		}
 		else {
-			buffer[i] = grid[i];
+			buffer[pos] = grid[pos];
 		}
 	}
 }
@@ -186,6 +186,17 @@ void State::render() {
 	SDL_RenderPresent(renderer);
 }
 
+void State::get_pos_cardinals(int pos, int &nrow, int &ncol) {
+	nrow = (int)(pos / cols);
+	ncol = pos % cols;
+}
+
+int State::cardinals_to_pos(int nrow, int ncol) {
+	nrow = (rows + nrow) % rows;
+	ncol = (cols + ncol) % cols;
+	return nrow * cols + ncol;
+}
+
 bool State::mouse_within_viewport(int x, int y) {
 	return ( 
 		x >= viewport.x && x <= viewport.x + viewport.w &&
@@ -193,30 +204,28 @@ bool State::mouse_within_viewport(int x, int y) {
 	);
 }
 
-int State::mouse_pos_to_cell(int x, int y) {
+int State::mouse_pos_to_cell_pos(int x, int y) {
 	x -= viewport.x;
     y -= viewport.y;
 
 	int ncol = (int)(x/cell_size);
 	int nrow = (int)(y/cell_size);
-	return nrow * cols + ncol;
-}
-
-int State::wrap_pos(int pos) {
-	int area = rows * cols;
-	return (area + pos) % (area);
+	return cardinals_to_pos(nrow, ncol);
 }
 
 int State::n_neighbors(int pos) {
+	int nrow, ncol;
+	get_pos_cardinals(pos, nrow, ncol);
+
 	int neighbors = 0;
-	neighbors += grid[wrap_pos(pos-1)];			// left
-	neighbors += grid[wrap_pos(pos+1)];			// right
-	neighbors += grid[wrap_pos(pos-cols)];		// top
-	neighbors += grid[wrap_pos(pos-cols-1)];	// top left
-	neighbors += grid[wrap_pos(pos-cols+1)];	// top right
-	neighbors += grid[wrap_pos(pos+cols)];   	// bottom
-	neighbors += grid[wrap_pos(pos+cols-1)];	// bottom left
-	neighbors += grid[wrap_pos(pos+cols+1)];	// bottom right
+	for (int drow = -1; drow <= 1; drow++) {
+		for (int dcol = -1; dcol <= 1; dcol++) {
+			if (drow == 0 && dcol == 0) dcol++;
+			int pos = cardinals_to_pos(nrow+drow, ncol+dcol);
+			neighbors += grid[pos];
+		}
+	}
+
 	return neighbors;
 }
 

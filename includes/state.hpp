@@ -28,10 +28,12 @@ private:
     void update();
     void render();
 
-    bool mouse_within_viewport(int x, int y);
-    int mouse_pos_to_cell(int x, int y);
+    void get_pos_cardinals(int pos, int &nrow, int &ncol);
+    int cardinals_to_pos(int row, int col);
 
-    int wrap_pos(int pos);
+    bool mouse_within_viewport(int x, int y);
+    int mouse_pos_to_cell_pos(int x, int y);
+
     int n_neighbors(int pos);
 
     void draw_cells();
