@@ -13,14 +13,15 @@ int main(int argc, char* argv[])
         return 1;
 	}
 
+    int exit_code = 0;
     State game = State(
         INIT_SCR_W, INIT_SCR_H, ROWS, COLS
     );
     if (game.init()) {
         game.mainloop();
         game.cleanup();
-    }
+    } else exit_code = 1;
 
 	SDL_Quit();
-	return 0;
+	return exit_code;
 }
