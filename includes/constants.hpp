@@ -10,8 +10,6 @@ extern const int ROWS;
 extern const int FPS;
 extern const int PAUSED_FPS;
 
-extern const double LIFE_POBABILITY;
-
 extern const int BLACK[4];
 extern const int WHITE[4];
 extern const int GRAY[4];
