@@ -13,15 +13,33 @@ int main(int argc, char* argv[])
         return 1;
 	}
 
-    int exit_code = 0;
-    State game = State(
+    SDL_Window* window = SDL_CreateWindow("Conway's Game of Life", 
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+        INIT_SCR_W, INIT_SCR_H, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+    );
+    if(window == nullptr)
+    {
+        std::cerr << "could not create window" << std::endl;
+		std::cerr << SDL_GetError() << std::endl;
+		return 1;
+    }
+
+    SDL_Renderer* renderer = SDL_CreateRenderer(
+        window, 0, SDL_RENDERER_ACCELERATED
+    );
+    if (renderer == nullptr) {
+        std::cerr << "could not create renderer" << std::endl;
+		std::cerr << SDL_GetError() << std::endl;
+		return 1;
+    }
+
+    State game = State(window, renderer,
         INIT_SCR_W, INIT_SCR_H, ROWS, COLS
     );
-    if (game.init()) {
-        game.mainloop();
-        game.cleanup();
-    } else exit_code = 1;
+    game.mainloop();
 
+    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
 	SDL_Quit();
-	return exit_code;
+	return 0;
 }

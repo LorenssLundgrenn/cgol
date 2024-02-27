@@ -11,9 +11,13 @@
 #include "constants.hpp"
 #include "util.hpp"
 
-State::State(int scr_w, int scr_h, int rows, int cols) :
+State::State(SDL_Window* window, SDL_Renderer* renderer, 
+	int scr_w, int scr_h, int rows, int cols
+) : window(window), renderer(renderer), 
 	scr_w(scr_w), scr_h(scr_h), rows(rows), cols(cols)
 {
+	update_screen(scr_w, scr_h);
+
 	grid = new int[rows*cols];
 	buffer = new int[rows*cols];
 	arr_fill(grid, 0, rows * cols);
@@ -23,35 +27,7 @@ State::State(int scr_w, int scr_h, int rows, int cols) :
     cell_size = cell_w < cell_h ? cell_w : cell_h;
 }
 
-bool State::init() {
-	window = SDL_CreateWindow("Conway's Game of Life", 
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
-        scr_w, scr_h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
-    );
-    if(window == nullptr)
-    {
-        std::cerr << "could not create window" << std::endl;
-		std::cerr << SDL_GetError() << std::endl;
-		return false;
-    }
-
-    renderer = SDL_CreateRenderer(
-        window, 0, SDL_RENDERER_ACCELERATED
-    );
-    if (renderer == nullptr) {
-        std::cerr << "could not create renderer" << std::endl;
-		std::cerr << SDL_GetError() << std::endl;
-		return false;
-    }
-
-	update_screen(scr_w, scr_h);
-
-	return true;
-}
-
-void State::cleanup() {
-    SDL_DestroyWindow(window);
-    SDL_DestroyRenderer(renderer);
+State::~State() {
     delete[] grid;
 	delete[] buffer;
 }

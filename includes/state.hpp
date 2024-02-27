@@ -43,9 +43,10 @@ private:
     void load_seed(std::string seed);
 
 public:
-    State(int scr_w, int scr_h, int rows, int cols);
-    bool init();
-    void cleanup();
+    State(SDL_Window* window, SDL_Renderer* renderer, 
+        int scr_w, int scr_h, int rows, int cols
+    );
+    ~State();
 
     void mainloop();
 };
