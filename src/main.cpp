@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <SDL_ttf.h>
 
 #include "constants.hpp"
 #include "state.hpp"
@@ -12,6 +13,11 @@ int main(int argc, char* argv[])
         std::cerr << SDL_GetError() << std::endl;
         return 1;
 	}
+
+    if (TTF_Init() != 0) {
+        std::cerr << "failed to initialize SDL_ttf" << std::endl;
+        std::cerr << TTF_GetError() << std::endl;
+    }
 
     SDL_Window* window = SDL_CreateWindow("Conway's Game of Life", 
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
@@ -38,8 +44,11 @@ int main(int argc, char* argv[])
     );
     game.mainloop();
 
-    SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+
+    TTF_Quit();
 	SDL_Quit();
+    
 	return 0;
 }

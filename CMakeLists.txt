@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.28.3)
 project(cgol)
 
 find_package(SDL2 2.30.0 REQUIRED)
+find_package(SDL2_ttf 2.22.0 REQUIRED)
 
 set(SRC_DIR ./src)
 set( SRC 
@@ -18,10 +19,18 @@ add_executable(${PROJECT_NAME} ${SRC})
 target_include_directories(${PROJECT_NAME} PRIVATE ./includes)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_ttf::SDL2_ttf)
 
-# copy .dll file to build directory
+# copy .dll files to build directory
+
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:SDL2::SDL2>
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:SDL2_ttf::SDL2_ttf>
         $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )
