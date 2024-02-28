@@ -2,6 +2,9 @@
 #define STATE_CLASS
 
 #include <SDL2/SDL.h>
+#include <SDL_ttf.h>
+
+#include "text.hpp"
 
 class State {
 private:
@@ -9,9 +12,15 @@ private:
     int* buffer {nullptr};
     SDL_Window* window {nullptr};
     SDL_Renderer* renderer {nullptr};
-    SDL_Rect viewport;
+    SDL_Rect viewport{};
+
+    int tick = 0;
     bool running = true;
-    bool simulate = true;
+    bool simulate = false;
+
+    TTF_Font* font {nullptr};
+    Text paused_text;
+    Text tick_text;
 
     int scr_w{};
     int scr_h{};
@@ -38,13 +47,14 @@ private:
 
     void draw_cells();
     void draw_grid();
+    void draw_ui();
 
     std::string generate_seed();
     void load_seed(std::string seed);
 
 public:
     State(SDL_Window* window, SDL_Renderer* renderer, 
-        int scr_w, int scr_h, int rows, int cols
+        TTF_Font* font, int scr_w, int scr_h, int rows, int cols
     );
     ~State();
 

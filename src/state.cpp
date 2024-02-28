@@ -1,8 +1,8 @@
 #include <iostream>
-#include <SDL2/SDL.h>
 #include <cmath>
-#include <vector>
-#include <bitset>
+#include <SDL2/SDL.h>
+#include <SDL_ttf.h>
+
 #include <random>
 #include <chrono>
 #include <string>
@@ -10,10 +10,11 @@
 #include "state.hpp"
 #include "constants.hpp"
 #include "util.hpp"
+#include "text.hpp"
 
 State::State(SDL_Window* window, SDL_Renderer* renderer, 
-	int scr_w, int scr_h, int rows, int cols
-) : window(window), renderer(renderer), 
+	TTF_Font* font, int scr_w, int scr_h, int rows, int cols
+) : window(window), renderer(renderer), font(font),
 	scr_w(scr_w), scr_h(scr_h), rows(rows), cols(cols)
 {
 	update_screen(scr_w, scr_h);
@@ -21,10 +22,16 @@ State::State(SDL_Window* window, SDL_Renderer* renderer,
 	grid = new int[rows*cols];
 	buffer = new int[rows*cols];
 	arr_fill(grid, 0, rows * cols);
+	arr_fill(buffer, 0, rows * cols);
 
 	int cell_w = (int)(scr_w/cols);
     int cell_h = (int)(scr_h/rows);
     cell_size = cell_w < cell_h ? cell_w : cell_h;
+
+	paused_text.init(renderer, font, TEXT_COLOR, TEXT_SHADE_COLOR);
+	paused_text.set_text("Paused");
+	paused_text.set_pos(0, TEXT_SIZE);
+	tick_text.init(renderer, font, TEXT_COLOR, TEXT_SHADE_COLOR);
 }
 
 State::~State() {
@@ -50,9 +57,6 @@ void State::update_screen(int win_w, int win_h) {
 }
 
 void State::mainloop() {
-	arr_fill(grid, 0, rows * cols);
-	arr_fill(buffer, 0, rows * cols);
-
 	while (running) {
 		if (simulate) {
 			update();
@@ -135,6 +139,7 @@ void State::handle_inputs() {
 }
 
 void State::update() {
+	tick++;
 	for (int pos = 0; pos < rows*cols; pos++) {
 		int cell = grid[pos];
 		int neighbors = n_neighbors(pos);
@@ -158,6 +163,7 @@ void State::render() {
 
 	draw_cells();
 	draw_grid();
+	draw_ui();
 
 	SDL_RenderPresent(renderer);
 }
@@ -236,6 +242,15 @@ void State::draw_grid() {
 		SDL_RenderDrawLine(renderer, 0, i*cell_size, viewport.w, i*cell_size);
 		SDL_RenderDrawLine(renderer, 0, i*cell_size-1, viewport.w, i*cell_size-1);
 	}	
+}
+
+void State::draw_ui() {
+	if (!simulate) {
+		paused_text.draw();
+	}
+
+	tick_text.set_text("tick: " + std::to_string(tick));
+	tick_text.draw();
 }
 
 std::string State::generate_seed() {

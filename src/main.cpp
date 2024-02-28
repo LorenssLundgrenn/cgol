@@ -39,10 +39,14 @@ int main(int argc, char* argv[])
 		return 1;
     }
 
-    State game = State(window, renderer,
+    TTF_Font* font = TTF_OpenFont(FONT_PATH, TEXT_SIZE);
+
+    State game = State(window, renderer, font,
         INIT_SCR_W, INIT_SCR_H, ROWS, COLS
     );
     game.mainloop();
+    
+    TTF_CloseFont(font);
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

@@ -12,6 +12,7 @@ set( SRC
     ${SRC_DIR}/state.cpp
     ${SRC_DIR}/constants.cpp
     ${SRC_DIR}/util.cpp
+    ${SRC_DIR}/text.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SRC})
